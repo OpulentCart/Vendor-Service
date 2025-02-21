@@ -1,6 +1,7 @@
 const streamifier = require("streamifier");
+const cloudinary = require("../config/cloudinaryConfig");
 
-const uploadCloudinary = (fileBuffer, folder) => {
+const uploadToCloudinary = (fileBuffer, folder) => {
     return new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
             { folder },
