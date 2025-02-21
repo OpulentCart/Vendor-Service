@@ -84,6 +84,7 @@ const Vendor = sequelize.define('Vendor', {
         defaultValue: 'pending'
     }
 }, {
+    tableName: "vendors",
     timestamps: true
 });
 
