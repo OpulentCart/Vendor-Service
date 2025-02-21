@@ -5,79 +5,86 @@ const Vendor = sequelize.define('Vendor', {
     vendor_id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
-        allowNull: false,
         primaryKey: true
     },
     user_id: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-            model: 'auth_app_customuser',
+            model: 'auth_app_customuser', // Refers to the Auth Service table
             key: 'id'
         },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
     },
     store_name: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.STRING,
         allowNull: false
     },
-    business_email: {
-        type: DataTypes.STRING(255),
+    category_id: {
+        type: DataTypes.UUID,
         allowNull: false,
-        validate: {
-            isEmail: true
+        references: {
+            model: 'category', // Refers to the categories table in Product Service
+            key: 'category_id'
         },
-    },
-    business_phone: {
-        type: DataTypes.STRING(20),
-        allowNull: false,
-        validate: {
-            isNumeric: true
-        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
     },
     store_description: {
         type: DataTypes.TEXT,
         allowNull: false
     },
-    street_address:{
-        type: DataTypes.TEXT,
+    business_email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+            isEmail: true
+        }
+    },
+    business_phone: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    street_address: {
+        type: DataTypes.STRING,
         allowNull: false
     },
     city: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         allowNull: false
     },
-    state:{
-        type: DataTypes.TEXT,
+    state: {
+        type: DataTypes.STRING,
         allowNull: false
     },
-    country:{
-        type: DataTypes.TEXT,
+    country: {
+        type: DataTypes.STRING,
         allowNull: false
     },
-    status: {
-        type: DataTypes.ENUM('pending', 'approved', 'rejected'),
-        allowNull: false,
-        defaultValue: 'pending'
+    pincode: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
     date: {
         type: DataTypes.DATE,
-        allowNull: false,
         defaultValue: DataTypes.NOW
     },
-    document: {
-        type: DataTypes.STRING,
+    business_document: {
+        type: DataTypes.STRING, // URL or file path
         allowNull: false
     },
     certificate: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING, // URL or file path
         allowNull: true
+    },
+    status: {
+        type: DataTypes.ENUM('pending', 'approved', 'rejected'),
+        defaultValue: 'pending'
     }
-},  {
-        tableName: 'vendors',
-        timestamps: true
-    }
-);
+}, {
+    timestamps: true
+});
 
 module.exports = Vendor;
