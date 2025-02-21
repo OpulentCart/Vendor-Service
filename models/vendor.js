@@ -10,7 +10,13 @@ const Vendor = sequelize.define('Vendor', {
     },
     user_id: {
         type: DataTypes.UUID,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: 'auth_app_customuser',
+            key: 'id'
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
     },
     store_name: {
         type: DataTypes.STRING(255),
@@ -34,7 +40,19 @@ const Vendor = sequelize.define('Vendor', {
         type: DataTypes.TEXT,
         allowNull: false
     },
-    store_address: {
+    street_address:{
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
+    city: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
+    state:{
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
+    country:{
         type: DataTypes.TEXT,
         allowNull: false
     },

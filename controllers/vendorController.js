@@ -64,7 +64,10 @@ exports.createVendor = async (req, res) => {
 // update the store status
 exports.updateStoreStatus = async (req, res) => {
     try{
+        const { vendor_id, status } = req.body;
 
+        const validStatuses = ["pending", "approved", "rejected"];
+        if(!validStat)
     }catch(error){
         
     }
