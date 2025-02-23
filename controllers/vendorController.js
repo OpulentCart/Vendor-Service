@@ -2,6 +2,7 @@ const Vendor = require('../models/vendor');
 const { uploadDocument }  = require("../services/multerService");
 const uploadToCloudinary = require("../services/cloudinaryService");
 const { where } = require('sequelize');
+const { generateVendorCertificate } = require('../utils/certificateUtils');
 
 // creating a new vendor
 exports.createVendor = async (req, res) => {
@@ -156,7 +157,7 @@ exports.updateStoreStatus = async (req, res) => {
     try{
         const { vendor_id, status } = req.body;
 
-        const vendor = await Vendor.update(
+        const vendorRows = await Vendor.update(
             {
                 status: status
             },
@@ -167,13 +168,23 @@ exports.updateStoreStatus = async (req, res) => {
             });
 
         if(status === 'approved'){
-            
+            const vendor = await Vendor.findOne({ where: { vendor_id: vendor_id } });
+            const certificate = await generateVendorCertificate(vendor);
+            const certificateUrl = await uploadToCloudinary(certificate);
+            await Vendor.update(
+                { certificate: certificateUrl },
+                { where: {vendor_id: vendor_id }}
+            );
         }
         return res.status(200).json({
             success: true,
             message: "Vendor's Status updated successfully"
         })
     }catch(error){
-        
+        console.error("Error in changing the vendor's atatus", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Servier error"
+        }); 
     }
 }; 
