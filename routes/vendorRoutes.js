@@ -5,8 +5,10 @@ const { authenticateUser, authorizeRole } = require('../middleware/authMiddlewar
 const uploadDocument = require('../services/multerService');
 
 // create vendor-store
+// working
 router.post('/create_store', uploadDocument, vendorController.createVendor);
 // get all vendors
+// working
 router.get('/', vendorController.getAllVendors);
 // get vendor by id 
 router.get('/:id', vendorController.getVendorById);
