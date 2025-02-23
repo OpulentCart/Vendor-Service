@@ -6,12 +6,12 @@ const { authenticateUser, authorizeRole } = require('../middleware/authMiddlewar
 // create vendor-store
 router.post('/create_store', authenticateUser, authorizeRole('vendor'), uploadDocument, vendorController.createVendor);
 // get all vendors
-router.get('/vendors', authenticateUser, authorizeRole('admin'), vendorController.getAllVendors);
+router.get('/', authenticateUser, authorizeRole('admin'), vendorController.getAllVendors);
 // get vendor by id 
-router.get('/vendors/:id', authenticateUser, authorizeRole('admin'), vendorController.getVendorById);
+router.get('/:id', authenticateUser, authorizeRole('vendor'), vendorController.getVendorById);
 // update vendor by id
-router.put('/vendors/:id', authenticateUser, authorizeRole('admin'), vendorController.updateVendor);
+router.put('/:id', authenticateUser, authorizeRole('admin'), vendorController.updateVendor);
 // delete vendor by id
-router.delete('/vendors/:id', authenticateUser, authorizeRole('admin' || 'vendor'), vendorController.deleteVendor);
+router.delete('/:id', authenticateUser, authorizeRole('admin' || 'vendor'), vendorController.deleteVendor);
 
 module.exports = router;
