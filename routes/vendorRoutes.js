@@ -10,7 +10,7 @@ router.get('/', authenticateUser, authorizeRole('admin'), vendorController.getAl
 // get vendor by id 
 router.get('/:id', authenticateUser, authorizeRole('vendor'), vendorController.getVendorById);
 // update vendor by id
-router.put('/:id', authenticateUser, authorizeRole('admin'), vendorController.updateVendor);
+router.put('/:id', authenticateUser, authorizeRole('admin'), vendorController.updateVendorStatus);
 // delete vendor by id
 router.delete('/:id', authenticateUser, authorizeRole('admin' || 'vendor'), vendorController.deleteVendor);
 

@@ -1,6 +1,7 @@
 const Vendor = require('../models/vendor');
 const { uploadDocument }  = require("../services/multerService");
 const uploadToCloudinary = require("../services/cloudinaryService");
+const { where } = require('sequelize');
 
 // creating a new vendor
 exports.createVendor = async (req, res) => {
@@ -73,8 +74,12 @@ exports.getAllVendors = async (req, res) => {
 // Get vendor by ID
 exports.getVendorById = async (req, res) => {
     try{
-        const { id } = req.params;
-        const vendor = await Vendor.findByPk(id);
+        const user_id = req.user.id;
+        const vendor = await Vendor.findAll({
+            where: {
+                user_id: user_id
+            }
+        });
 
         if(!vendor){
             return res.status(404).json({
@@ -145,14 +150,30 @@ exports.deleteVendor = async (req, res) => {
         });
     }
 }
-// update the store status
-// exports.updateStoreStatus = async (req, res) => {
-//     try{
-//         const { vendor_id, status } = req.body;
 
-//         const validStatuses = ["pending", "approved", "rejected"];
-//         if(!validStat)
-//     }catch(error){
+// update the store status
+exports.updateStoreStatus = async (req, res) => {
+    try{
+        const { vendor_id, status } = req.body;
+
+        const vendor = await Vendor.update(
+            {
+                status: status
+            },
+            {
+                where: {
+                    vendor_id: vendor_id
+                }
+            });
+
+        if(status === 'approved'){
+            
+        }
+        return res.status(200).json({
+            success: true,
+            message: "Vendor's Status updated successfully"
+        })
+    }catch(error){
         
-//     }
-// }; 
+    }
+}; 
