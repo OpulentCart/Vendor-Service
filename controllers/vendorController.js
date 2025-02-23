@@ -165,15 +165,16 @@ exports.updateStoreStatus = async (req, res) => {
 
         if(status === 'approved'){
             const vendor = await Vendor.findOne({ where: { vendor_id: vendor_id } });
+            console.log("Vendorrrr", vendor);
             const certificate = await generateVendorCertificate(vendor);
             const certificateUrl = await uploadToCloudinary(certificate);
             console.log("Generated Certificate:", certificate);
             console.log("Uploaded Certificate URL:", certificateUrl.secure_url);
             await Vendor.update(
-                { certificate: certificateUrl.secure_url },
+                { certificate: certificateUrl?.secure_url },
                 { where: {vendor_id: vendor_id }}
             );
-            sendEmail(vendor.business_email, certificate);
+            await sendEmail({to: vendor?.business_email, file: certificateUrl.secure_url });
         }
         return res.status(200).json({
             success: true,

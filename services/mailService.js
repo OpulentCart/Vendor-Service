@@ -1,8 +1,12 @@
 const nodemailer = require("nodemailer");
 
 exports.sendEmail = async ({to, file}) => {
+    if (!to) {
+        console.error("Recipient email is missing!");
+        return;
+    }
     const transporter = nodemailer.createTransport({
-        service: "Gmail",
+        service: "gmail",
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASSWORD
@@ -13,12 +17,7 @@ exports.sendEmail = async ({to, file}) => {
         from: process.env.EMAIL_USER,
         to,
         subject: 'Your Vendor Store Certificate',
-        text: 'Please find your Carbon Credit Certificate attached.',
-        attachments:[
-            {
-                file,
-                filename: 'certificate.pdf'
-            }
-        ]
+        text: `Please find your Carbon Credit Certificate attached.  
+                And Download it from the given url: ${file}`
     });
 };
