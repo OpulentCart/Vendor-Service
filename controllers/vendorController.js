@@ -3,6 +3,7 @@ const { uploadDocument }  = require("../services/multerService");
 const uploadToCloudinary = require("../services/cloudinaryService");
 const { where } = require('sequelize');
 const { generateVendorCertificate } = require('../utils/certificateUtils');
+const { sendEmail } = require('../services/mailService');
 
 // creating a new vendor
 exports.createVendor = async (req, res) => {
@@ -158,14 +159,9 @@ exports.updateStoreStatus = async (req, res) => {
         const { vendor_id, status } = req.body;
 
         const vendorRows = await Vendor.update(
-            {
-                status: status
-            },
-            {
-                where: {
-                    vendor_id: vendor_id
-                }
-            });
+            { status: status },
+            { where: { vendor_id: vendor_id } }
+        );
 
         if(status === 'approved'){
             const vendor = await Vendor.findOne({ where: { vendor_id: vendor_id } });
@@ -175,6 +171,7 @@ exports.updateStoreStatus = async (req, res) => {
                 { certificate: certificateUrl },
                 { where: {vendor_id: vendor_id }}
             );
+            sendEmail(vendor.business_email, certificate);
         }
         return res.status(200).json({
             success: true,
