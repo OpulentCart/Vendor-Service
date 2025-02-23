@@ -2,15 +2,16 @@ const express = require('express');
 const router = express.Router();
 const vendorController = require('../controllers/vendorController');
 const { authenticateUser, authorizeRole } = require('../middleware/authMiddleware');
+const uploadDocument = require('../services/multerService');
 
 // create vendor-store
-router.post('/create_store', authenticateUser, authorizeRole('vendor'), uploadDocument, vendorController.createVendor);
+router.post('/create_store', uploadDocument, vendorController.createVendor);
 // get all vendors
-router.get('/', authenticateUser, authorizeRole('admin'), vendorController.getAllVendors);
+router.get('/', vendorController.getAllVendors);
 // get vendor by id 
-router.get('/:id', authenticateUser, authorizeRole('vendor'), vendorController.getVendorById);
+router.get('/:id', vendorController.getVendorById);
 // update vendor by id
-router.put('/:id', authenticateUser, authorizeRole('admin'), vendorController.updateVendorStatus);
+router.put('/:id', vendorController.updateStoreStatus);
 // delete vendor by id
 router.delete('/:id', authenticateUser, authorizeRole('admin' || 'vendor'), vendorController.deleteVendor);
 

@@ -1,14 +1,14 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/dbConfig');
+const { sequelize } = require('../config/dbConfig');
 
 const Vendor = sequelize.define('Vendor', {
     vendor_id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     user_id: {
-        type: DataTypes.UUID,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: 'auth_app_customuser', // Refers to the Auth Service table
@@ -22,7 +22,7 @@ const Vendor = sequelize.define('Vendor', {
         allowNull: false
     },
     category_id: {
-        type: DataTypes.UUID,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: 'category', // Refers to the categories table in Product Service
@@ -32,7 +32,7 @@ const Vendor = sequelize.define('Vendor', {
         onDelete: 'CASCADE'
     },
     store_description: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         allowNull: false
     },
     business_email: {
@@ -45,7 +45,7 @@ const Vendor = sequelize.define('Vendor', {
     },
     business_phone: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
     },
     street_address: {
         type: DataTypes.STRING,
@@ -73,7 +73,7 @@ const Vendor = sequelize.define('Vendor', {
     },
     business_document: {
         type: DataTypes.STRING, // URL or file path
-        allowNull: false
+        allowNull: true
     },
     certificate: {
         type: DataTypes.STRING, // URL or file path

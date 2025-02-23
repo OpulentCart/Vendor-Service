@@ -13,9 +13,13 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 });
 
 // Authenticate the connection to the database
-sequelize
-  .authenticate()
-  .then(() => console.log("✅ Connected to PostgreSQL RDS"))
-  .catch((err) => console.error("❌ DB Connection Error:", err));
+const connectDB = async () => {
+    try {
+      await sequelize.authenticate();
+      console.log("✅ Database connected successfully.");
+    } catch (error) {
+      console.error("❌ Database connection failed:", error);
+    }
+  };
 
-module.exports = sequelize;
+module.exports = { sequelize, connectDB };

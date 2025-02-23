@@ -8,10 +8,10 @@ const { sendEmail } = require('../services/mailService');
 // creating a new vendor
 exports.createVendor = async (req, res) => {
     try{
-        const user_id = req.user.id;
-        console.log("User_id", user_id);
-        const { store_name, category_id, business_email, buisness_phone, store_description, street_address, city, state, country, pincode } = req.body;
-        
+        //const user_id = req.user.id;
+        //console.log("User_id", user_id);
+        const { user_id, store_name, category_id, business_email, business_phone, store_description, street_address, city, state, country, pincode } = req.body;
+        console.log(req.body);
         // upload file to cloudinary
         let documentUrl = null;
         if(req.file){
@@ -29,7 +29,7 @@ exports.createVendor = async (req, res) => {
             store_name,
             category_id,
             business_email,
-            buisness_phone,
+            business_phone,
             store_description,
             street_address,
             city,
@@ -167,8 +167,10 @@ exports.updateStoreStatus = async (req, res) => {
             const vendor = await Vendor.findOne({ where: { vendor_id: vendor_id } });
             const certificate = await generateVendorCertificate(vendor);
             const certificateUrl = await uploadToCloudinary(certificate);
+            console.log("Generated Certificate:", certificate);
+            console.log("Uploaded Certificate URL:", certificateUrl.secure_url);
             await Vendor.update(
-                { certificate: certificateUrl },
+                { certificate: certificateUrl.secure_url },
                 { where: {vendor_id: vendor_id }}
             );
             sendEmail(vendor.business_email, certificate);

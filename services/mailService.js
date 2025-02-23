@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-exports.sendEmail = async ({to, attachments}) => {
+exports.sendEmail = async ({to, file}) => {
     const transporter = nodemailer.createTransport({
         service: "Gmail",
         auth: {
@@ -16,6 +16,7 @@ exports.sendEmail = async ({to, attachments}) => {
         text: 'Please find your Carbon Credit Certificate attached.',
         attachments:[
             {
+                file,
                 filename: 'certificate.pdf'
             }
         ]
