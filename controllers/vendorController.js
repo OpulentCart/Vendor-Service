@@ -1,7 +1,6 @@
 const Vendor = require('../models/vendor');
 const { uploadDocument }  = require("../services/multerService");
 const uploadToCloudinary = require("../services/cloudinaryService");
-const { v4: uuidv4 } = require("uuid");
 
 // creating a new vendor
 exports.createVendor = async (req, res) => {

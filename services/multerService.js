@@ -1,7 +1,6 @@
 const multer = require("multer");
+// storing file in memory and not disk
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-const uploadDocument = upload.single("document");
-
-module.exports = { uploadDocument };
+module.exports =  upload.single('document');

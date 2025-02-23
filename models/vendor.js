@@ -88,4 +88,10 @@ const Vendor = sequelize.define('Vendor', {
     timestamps: true
 });
 
+sequelize.sync({ alter: true})
+    .then(() => {
+        console.log("Vendors table created")
+    })
+    .catch(err => console.error("❌ Error creating Vendor table:", err));
+
 module.exports = Vendor;
