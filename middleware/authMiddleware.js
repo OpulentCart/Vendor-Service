@@ -6,7 +6,7 @@ const authenticateUser = (req, res, next) => {
     const authHeader = req.header("Authorization");
 
     if(!authHeader || !authHeader.startsWith("Bearer")){
-        return res.sattus(401).json({
+        return res.status(401).json({
             error: "Unauthorized: No token provided"
         });
     }

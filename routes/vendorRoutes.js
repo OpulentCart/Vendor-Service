@@ -6,7 +6,7 @@ const uploadDocument = require('../services/multerService');
 
 // create vendor-store
 // working
-router.post('/create_store', uploadDocument, vendorController.createVendor);
+router.post('/create_store', authenticateUser, uploadDocument, vendorController.createVendor);
 // get all vendors
 // working
 router.get('/', vendorController.getAllVendors);

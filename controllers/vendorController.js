@@ -4,13 +4,13 @@ const uploadToCloudinary = require("../services/cloudinaryService");
 const { where } = require('sequelize');
 const { generateVendorCertificate } = require('../utils/certificateUtils');
 const { sendEmail } = require('../services/mailService');
-
+const axios = require('axios');
 // creating a new vendor
 exports.createVendor = async (req, res) => {
     try{
-        //const user_id = req.user.id;
-        //console.log("User_id", user_id);
-        const { user_id, store_name, category_id, business_email, business_phone, store_description, street_address, city, state, country, pincode } = req.body;
+        const user_id = req.user.user_id;
+        console.log("User_id", user_id);
+        const { store_name, category_id, business_email, business_phone, store_description, street_address, city, state, country, pincode } = req.body;
         console.log(req.body);
         // upload file to cloudinary
         let documentUrl = null;
@@ -23,7 +23,16 @@ exports.createVendor = async (req, res) => {
         }else{
             console.error("Document upload failed");
         }
+        //const adminId = await axios.get(`http://localhost:5008//users`);
+        // sending a notification to admin via notifi
+        await axios.post(`http://localhost:5008/notifications/`, {
+            user_id: 27,
+            title: `New Vendor Store`,
+            message: `A new vendor store has been created.`
+        });
 
+
+        
         const newVendor = await Vendor.create({
             user_id,
             store_name,
