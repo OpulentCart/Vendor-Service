@@ -6,14 +6,14 @@ const uploadDocument = require('../services/multerService');
 
 // create vendor-store
 // working
-router.post('/create_store', authenticateUser, uploadDocument, vendorController.createVendor);
+router.post('/create_store', authenticateUser, authorizeRole('vendor'), uploadDocument, vendorController.createVendor);
 // get all vendors
 // working
-router.get('/', vendorController.getAllVendors);
+router.get('/', authenticateUser, authorizeRole('admin'), vendorController.getAllVendors);
 // get vendor by id 
-router.get('/:id', vendorController.getVendorById);
+router.get('/:id', authenticateUser, authorizeRole('vendor'), vendorController.getVendorById);
 // update vendor by id
-router.put('/:id', vendorController.updateStoreStatus);
+router.put('/:id', authenticateUser, authorizeRole('admin'), vendorController.updateStoreStatus);
 // delete vendor by id
 router.delete('/:id', authenticateUser, authorizeRole('admin' || 'vendor'), vendorController.deleteVendor);
 
