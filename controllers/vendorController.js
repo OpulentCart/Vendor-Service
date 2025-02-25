@@ -162,14 +162,14 @@ exports.deleteVendor = async (req, res) => {
 exports.updateStoreStatus = async (req, res) => {
     try{
         const { status } = req.body;
-        const { vendor_id } = req.params;
+        const { id } = req.params;
         const vendorRows = await Vendor.update(
             { status: status },
-            { where: { vendor_id: vendor_id } }
+            { where: { vendor_id: id } }
         );
 
         if(status === 'approved'){
-            const vendor = await Vendor.findOne({ where: { vendor_id: vendor_id } });
+            const vendor = await Vendor.findOne({ where: { vendor_id: id } });
             console.log("Vendorrrr", vendor);
             const certificate = await generateVendorCertificate(vendor);
             const certificateUrl = await uploadToCloudinary(certificate);
@@ -177,7 +177,7 @@ exports.updateStoreStatus = async (req, res) => {
             console.log("Uploaded Certificate URL:", certificateUrl.secure_url);
             await Vendor.update(
                 { certificate: certificateUrl?.secure_url },
-                { where: {vendor_id: vendor_id }}
+                { where: {vendor_id: id }}
             );
             await sendEmail({to: vendor?.business_email, file: certificateUrl.secure_url });
         }
