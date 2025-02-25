@@ -161,8 +161,8 @@ exports.deleteVendor = async (req, res) => {
 // update the store status
 exports.updateStoreStatus = async (req, res) => {
     try{
-        const { vendor_id, status } = req.body;
-
+        const { status } = req.body;
+        const { vendor_id } = req.params;
         const vendorRows = await Vendor.update(
             { status: status },
             { where: { vendor_id: vendor_id } }
