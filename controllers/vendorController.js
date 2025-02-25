@@ -25,14 +25,6 @@ exports.createVendor = async (req, res) => {
         }
         //const adminId = await axios.get(`http://localhost:5008//users`);
         // sending a notification to admin via notifi
-        await axios.post(`http://localhost:5008/notifications/`, {
-            user_id: 27,
-            title: `New Vendor Store`,
-            message: `A new vendor store has been created.`
-        });
-
-
-        
         const newVendor = await Vendor.create({
             user_id,
             store_name,
@@ -50,7 +42,11 @@ exports.createVendor = async (req, res) => {
             certificate: null,
             status: 'pending'
         });
-
+        await axios.post(`http://localhost:5008/notifications/`, {
+            user_id: 27,
+            title: `New Vendor Store`,
+            message: `A new vendor store has been created.`
+        });
         res.status(201).json({
             success: true,
             message: "Vendor is created successfully",
