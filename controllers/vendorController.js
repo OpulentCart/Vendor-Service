@@ -4,7 +4,7 @@ const uploadToCloudinary = require("../services/cloudinaryService");
 const { where } = require('sequelize');
 const { generateVendorCertificate } = require('../utils/certificateUtils');
 const { sendEmail } = require('../services/mailService');
-const connectRabbitMQ = require('../config/rabbitmqConfig');
+const { getChannel } = require("../config/rabbitmqConfig");
 
 // creating a new vendor
 exports.createVendor = async (req, res) => {
@@ -49,14 +49,19 @@ exports.createVendor = async (req, res) => {
         // });
         
         // Send notifications to RabbitMQ
-        const channel = await connectRabbitMQ();
-        const notification = {
-            user_id: 27,
-            title: `New Vendor Store`,
-            message: `A new vendor store '${store_name}' has been created and is pending approval.`
-        };
-        channel.sendToQueue('notifications', Buffer.from(JSON.stringify(notification)), { persistent: true });
-        console.log("📨 Sent notification to RabbitMQ:", notification);
+        const channel = getChannel();
+        if (channel) {
+            const notification = {
+                user_id: 27,
+                title: `New Vendor Store`,
+                message: `A new vendor store '${store_name}' has been created and is pending approval.`,
+            };
+
+            channel.sendToQueue("notifications", Buffer.from(JSON.stringify(notification)), { persistent: true });
+            console.log("📨 Sent notification to RabbitMQ:", notification);
+        } else {
+            console.error("❌ RabbitMQ channel not available");
+        }
 
         res.status(201).json({
             success: true,
