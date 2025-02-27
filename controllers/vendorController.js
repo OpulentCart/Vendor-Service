@@ -42,11 +42,11 @@ exports.createVendor = async (req, res) => {
             certificate: null,
             status: 'pending'
         });
-        await axios.post(`http://localhost:5008/notifications/`, {
-            user_id: 27,
-            title: `New Vendor Store`,
-            message: `A new vendor store has been created.`
-        });
+        // await axios.post(`http://localhost:5008/notifications/`, {
+        //     user_id: 27,
+        //     title: `New Vendor Store`,
+        //     message: `A new vendor store has been created.`
+        // });
         res.status(201).json({
             success: true,
             message: "Vendor is created successfully",
@@ -193,3 +193,12 @@ exports.updateStoreStatus = async (req, res) => {
         }); 
     }
 }; 
+
+// Get total count of vendor stores: including approved, pending & rejected stores
+exports.getTotalCountOfStores = async (req, res) => {
+    try{
+
+    }catch(error){
+
+    }
+};
