@@ -7,7 +7,7 @@ const connectRabbitMQ = async () => {
         const channel = await connection.createChannel();
         await channel.assertQueue('notifications', { durable: true });
         console.log('✅ Connected to RabbitMQ');
-        return channel;
+        return { connection, channel };
     } catch (error) {
         console.error('❌ RabbitMQ Connection Error:', error.message);
     }
