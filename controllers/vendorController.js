@@ -4,12 +4,13 @@ const uploadToCloudinary = require("../services/cloudinaryService");
 const { where } = require('sequelize');
 const { generateVendorCertificate } = require('../utils/certificateUtils');
 const { sendEmail } = require('../services/mailService');
-const axios = require('axios');
+const connectRabbitMQ = require('../config/rabbitmqConfig');
+
 // creating a new vendor
 exports.createVendor = async (req, res) => {
     try{
         const user_id = req.user.user_id;
-        console.log("User_id", user_id);
+        //console.log("User_id", user_id);
         const { store_name, category_id, business_email, business_phone, store_description, street_address, city, state, country, pincode } = req.body;
         console.log(req.body);
         // upload file to cloudinary
@@ -23,8 +24,7 @@ exports.createVendor = async (req, res) => {
         }else{
             console.error("Document upload failed");
         }
-        //const adminId = await axios.get(`http://localhost:5008//users`);
-        // sending a notification to admin via notifi
+        
         const newVendor = await Vendor.create({
             user_id,
             store_name,
@@ -47,6 +47,17 @@ exports.createVendor = async (req, res) => {
         //     title: `New Vendor Store`,
         //     message: `A new vendor store has been created.`
         // });
+        
+        // Send notifications to RabbitMQ
+        const channel = await connectRabbitMQ();
+        const notification = {
+            user_id: 27,
+            title: `New Vendor Store`,
+            message: `A new vendor store '${store_name}' has been created and is pending approval.`
+        };
+        channel.sendToQueue('notifications', Buffer.from(JSON.stringify(notification)), { persistent: true });
+        console.log("📨 Sent notification to RabbitMQ:", notification);
+
         res.status(201).json({
             success: true,
             message: "Vendor is created successfully",
