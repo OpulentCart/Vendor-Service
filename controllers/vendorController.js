@@ -4,12 +4,13 @@ const uploadToCloudinary = require("../services/cloudinaryService");
 const { where } = require('sequelize');
 const { generateVendorCertificate } = require('../utils/certificateUtils');
 const { sendEmail } = require('../services/mailService');
-const axios = require('axios');
+const { getChannel } = require("../config/rabbitmqConfig");
+
 // creating a new vendor
 exports.createVendor = async (req, res) => {
     try{
         const user_id = req.user.user_id;
-        console.log("User_id", user_id);
+        //console.log("User_id", user_id);
         const { store_name, category_id, business_email, business_phone, store_description, street_address, city, state, country, pincode } = req.body;
         console.log(req.body);
         // upload file to cloudinary
@@ -23,15 +24,6 @@ exports.createVendor = async (req, res) => {
         }else{
             console.error("Document upload failed");
         }
-        //const adminId = await axios.get(`http://localhost:5008//users`);
-        // sending a notification to admin via notifi
-        await axios.post(`http://localhost:5008/notifications/`, {
-            user_id: 27,
-            title: `New Vendor Store`,
-            message: `A new vendor store has been created.`
-        });
-
-
         
         const newVendor = await Vendor.create({
             user_id,
@@ -50,6 +42,26 @@ exports.createVendor = async (req, res) => {
             certificate: null,
             status: 'pending'
         });
+        // await axios.post(`http://localhost:5008/notifications/`, {
+        //     user_id: 27,
+        //     title: `New Vendor Store`,
+        //     message: `A new vendor store has been created.`
+        // });
+        
+        // Send notifications to RabbitMQ
+        const channel = getChannel();
+        if (channel) {
+            const notification = {
+                user_id: 27,
+                title: `New Vendor Store`,
+                message: `A new vendor store '${store_name}' has been created and is pending approval.`,
+            };
+
+            channel.sendToQueue("notifications", Buffer.from(JSON.stringify(notification)), { persistent: true });
+            console.log("📨 Sent notification to RabbitMQ:", notification);
+        } else {
+            console.error("❌ RabbitMQ channel not available");
+        }
 
         res.status(201).json({
             success: true,
@@ -165,15 +177,15 @@ exports.deleteVendor = async (req, res) => {
 // update the store status
 exports.updateStoreStatus = async (req, res) => {
     try{
-        const { vendor_id, status } = req.body;
-
+        const { status } = req.body;
+        const { id } = req.params;
         const vendorRows = await Vendor.update(
             { status: status },
-            { where: { vendor_id: vendor_id } }
+            { where: { vendor_id: id } }
         );
 
         if(status === 'approved'){
-            const vendor = await Vendor.findOne({ where: { vendor_id: vendor_id } });
+            const vendor = await Vendor.findOne({ where: { vendor_id: id } });
             console.log("Vendorrrr", vendor);
             const certificate = await generateVendorCertificate(vendor);
             const certificateUrl = await uploadToCloudinary(certificate);
@@ -181,7 +193,7 @@ exports.updateStoreStatus = async (req, res) => {
             console.log("Uploaded Certificate URL:", certificateUrl.secure_url);
             await Vendor.update(
                 { certificate: certificateUrl?.secure_url },
-                { where: {vendor_id: vendor_id }}
+                { where: {vendor_id: id }}
             );
             await sendEmail({to: vendor?.business_email, file: certificateUrl.secure_url });
         }
@@ -197,3 +209,12 @@ exports.updateStoreStatus = async (req, res) => {
         }); 
     }
 }; 
+
+// Get total count of vendor stores: including approved, pending & rejected stores
+exports.getTotalCountOfStores = async (req, res) => {
+    try{
+
+    }catch(error){
+
+    }
+};

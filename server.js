@@ -1,16 +1,22 @@
 const express = require("express");
 const cors = require("cors");
-const app = express();
 const { connectDB } = require("./config/dbConfig");
+const { connectRabbitMQ } = require("./config/rabbitmqConfig");
 require("dotenv").config();
 
-// middleware
+const app = express();
+
+// Middleware
 app.use(express.json());
 app.use(cors());
 
-// connect to the database
+// Connect to the database
 connectDB();
+
+// Connect to RabbitMQ
+connectRabbitMQ();
 
 app.use("/vendors", require("./routes/vendorRoutes"));
 
-app.listen(process.env.PORT, () => console.log(`Product Service running on port ${process.env.PORT}`));
+const PORT = process.env.PORT;
+app.listen(PORT, () => console.log(`🚀 Product Service running on port ${PORT}`));
