@@ -192,6 +192,23 @@ exports.updateStoreStatus = async (req, res) => {
             );
             await sendEmail({to: vendor?.business_email, file: certificateUrl.secure_url });
         }
+        const vendor = await Vendor.findByPk(id);  
+
+        // Send notifications to RabbitMQ
+        const channel = getChannel();
+        if (channel) {
+            const notification = {
+                user_id: vendor.vendor_id,
+                title: `Update: ${vendor.store_name}`,
+                message: `Your Store '${vendor.store_name}' has been '${vendor.status}'.`,
+            };
+
+            channel.sendToQueue("notifications", Buffer.from(JSON.stringify(notification)), { persistent: true });
+            console.log("📨 Sent notification to RabbitMQ:", notification);
+        } else {
+            console.error("❌ RabbitMQ channel not available");
+        }
+
         return res.status(200).json({
             success: true,
             message: "Vendor's Status updated successfully"

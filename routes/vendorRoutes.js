@@ -12,7 +12,8 @@ router.post('/create_store', authenticateUser, authorizeRole('vendor'), uploadDo
 router.get('/', authenticateUser, authorizeRole('admin'), vendorController.getAllVendors);
 // get vendor by id 
 router.get('/stores/', authenticateUser, authorizeRole('vendor'), vendorController.getVendorStoresByVendorId);
-// update vendor by id
+
+// update vendor store status by id
 router.put('/:id', authenticateUser, authorizeRole('admin'), vendorController.updateStoreStatus);
 // delete vendor by id
 router.delete('/:id', authenticateUser, authorizeRole('admin' || 'vendor'), vendorController.deleteVendor);
