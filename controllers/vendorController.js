@@ -42,11 +42,6 @@ exports.createVendor = async (req, res) => {
             certificate: null,
             status: 'pending'
         });
-        // await axios.post(`http://localhost:5008/notifications/`, {
-        //     user_id: 27,
-        //     title: `New Vendor Store`,
-        //     message: `A new vendor store has been created.`
-        // });
         
         // Send notifications to RabbitMQ
         const channel = getChannel();
@@ -54,7 +49,7 @@ exports.createVendor = async (req, res) => {
             const notification = {
                 user_id: 27,
                 title: `New Vendor Store`,
-                message: `A new vendor store '${store_name}' has been created and is pending approval.`,
+                message: `A new vendor store '${store_name}' has been created and is pending for Approval.`,
             };
 
             channel.sendToQueue("notifications", Buffer.from(JSON.stringify(notification)), { persistent: true });
@@ -94,10 +89,10 @@ exports.getAllVendors = async (req, res) => {
     }
 };
 
-// Get vendor by ID
-exports.getVendorById = async (req, res) => {
+// Get vendor-Stores by Vendor ID
+exports.getVendorStoresByVendorId = async (req, res) => {
     try{
-        const user_id = req.user.id;
+        const user_id = req.user.user_id;
         const vendor = await Vendor.findAll({
             where: {
                 user_id: user_id
