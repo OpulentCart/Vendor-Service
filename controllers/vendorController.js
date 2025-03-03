@@ -172,6 +172,7 @@ exports.deleteVendor = async (req, res) => {
 // update the store status
 exports.updateStoreStatus = async (req, res) => {
     try{
+        const user_id = req.user.user_id;
         const { status } = req.body;
         const { id } = req.params;
         const vendorRows = await Vendor.update(
@@ -198,7 +199,7 @@ exports.updateStoreStatus = async (req, res) => {
         const channel = getChannel();
         if (channel) {
             const notification = {
-                user_id: vendor.user_id,
+                user_id: user_id,
                 title: `Update: ${vendor.store_name}`,
                 message: `Your Store '${vendor.store_name}' has been '${vendor.status}'.`,
             };
