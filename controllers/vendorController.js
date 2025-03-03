@@ -198,7 +198,7 @@ exports.updateStoreStatus = async (req, res) => {
         const channel = getChannel();
         if (channel) {
             const notification = {
-                user_id: vendor.vendor_id,
+                user_id: vendor.user_id,
                 title: `Update: ${vendor.store_name}`,
                 message: `Your Store '${vendor.store_name}' has been '${vendor.status}'.`,
             };
