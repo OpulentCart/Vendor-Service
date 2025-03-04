@@ -46,26 +46,6 @@ const Vendor = sequelize.define('Vendor', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    street_address: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    city: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    state: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    country: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    pincode: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
     date: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
