@@ -80,7 +80,7 @@ exports.createVendor = async (req, res) => {
 exports.getAllVendors = async (req, res) => {
     try{
         const vendors = await Vendor.findAll({
-            include: [{ model: Address, as: 'address' }]
+            include: [{ model: Address, as: 'address', attributes: ['street', 'city', 'state', 'country', 'pincode'] }]
         });
         return res.status(200).json({
             success: true,
@@ -103,7 +103,7 @@ exports.getVendorStoresByVendorId = async (req, res) => {
             where: {
                 user_id: user_id
             },
-            include: [{ model: Address, as: 'address' }]
+            include: [{ model: Address, as: 'address', attributes: ['street', 'city', 'state', 'country', 'pincode']}]
         });
 
         if(!vendor){
