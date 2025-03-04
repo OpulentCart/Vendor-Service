@@ -82,7 +82,7 @@ sequelize.sync({ alter: true})
     })
     .catch(err => console.error("❌ Error creating Vendor table:", err));
 
-Vendor.belongsTo(Address, { foreignKey: 'address_id', as: 'address' });
-
+    Vendor.belongsTo(Address, { foreignKey: "address_id", as: "address" });
+    Address.hasOne(Vendor, { foreignKey: "address_id" });
 
 module.exports = Vendor;

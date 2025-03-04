@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/dbConfig');
-
 const Address = sequelize.define('Address', {
     address_id: {
         type: DataTypes.INTEGER,
@@ -38,6 +37,5 @@ sequelize.sync({ alter: true})
     })
     .catch(err => console.error("❌ Error creating Address table:", err));
 
-    Address.hasOne(Vendor, { foreignKey: 'address_id' });
 
 module.exports = Address;

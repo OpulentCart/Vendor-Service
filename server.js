@@ -19,4 +19,4 @@ connectRabbitMQ();
 app.use("/vendors", require("./routes/vendorRoutes"));
 
 const PORT = process.env.PORT;
-app.listen(PORT, () => console.log(`🚀 Product Service running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Vendor Service running on port ${PORT}`));
