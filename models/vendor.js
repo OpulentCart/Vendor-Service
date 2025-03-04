@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/dbConfig');
-
+const Address = require("./address");
 const Vendor = sequelize.define('Vendor', {
     vendor_id: {
         type: DataTypes.INTEGER,
