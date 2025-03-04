@@ -46,6 +46,15 @@ const Vendor = sequelize.define('Vendor', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    address_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references:{
+            model: 'address',
+            key: 'address_id'
+        },
+        onDelete: 'CASCADE'
+    },
     date: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
@@ -72,5 +81,8 @@ sequelize.sync({ alter: true})
         console.log("Vendors table created")
     })
     .catch(err => console.error("❌ Error creating Vendor table:", err));
+
+Vendor.belongsTo(Address, { foreignKey: 'address_id', as: 'address' });
+
 
 module.exports = Vendor;

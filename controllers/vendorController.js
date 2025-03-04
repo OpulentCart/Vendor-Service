@@ -5,6 +5,7 @@ const { where } = require('sequelize');
 const { generateVendorCertificate } = require('../utils/certificateUtils');
 const { sendEmail } = require('../services/mailService');
 const { getChannel } = require("../config/rabbitmqConfig");
+const Address = require('../models/address');
 
 // creating a new vendor
 exports.createVendor = async (req, res) => {
@@ -24,7 +25,14 @@ exports.createVendor = async (req, res) => {
         }else{
             console.error("Document upload failed");
         }
-        
+        const address = await Address.create({
+            street: street_address,
+            city,
+            state,
+            country,
+            pincode
+        });
+
         const newVendor = await Vendor.create({
             user_id,
             store_name,
@@ -32,11 +40,7 @@ exports.createVendor = async (req, res) => {
             business_email,
             business_phone,
             store_description,
-            street_address,
-            city,
-            state,
-            country,
-            pincode,
+            address_id: address.address_id,
             date: new Date(),
             business_document: documentUrl,
             certificate: null,
@@ -75,7 +79,9 @@ exports.createVendor = async (req, res) => {
 // get all vendors
 exports.getAllVendors = async (req, res) => {
     try{
-        const vendors = await Vendor.findAll();
+        const vendors = await Vendor.findAll({
+            include: [{ model: Address, as: 'address' }]
+        });
         return res.status(200).json({
             success: true,
             vendors
@@ -96,7 +102,8 @@ exports.getVendorStoresByVendorId = async (req, res) => {
         const vendor = await Vendor.findAll({
             where: {
                 user_id: user_id
-            }
+            },
+            include: [{ model: Address, as: 'address' }]
         });
 
         if(!vendor){
@@ -223,11 +230,3 @@ exports.updateStoreStatus = async (req, res) => {
     }
 }; 
 
-// Get total count of vendor stores: including approved, pending & rejected stores
-exports.getTotalCountOfStores = async (req, res) => {
-    try{
-
-    }catch(error){
-
-    }
-};

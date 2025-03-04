@@ -15,6 +15,10 @@ const Address = sequelize.define('Address', {
         type: DataTypes.STRING, 
         allowNull: false 
     },
+    state:{
+        type: DataTypes.STRING, 
+        allowNull: false 
+    },
     country: { 
         type: DataTypes.STRING, 
         allowNull: false 
@@ -33,5 +37,7 @@ sequelize.sync({ alter: true})
         console.log("Address table created")
     })
     .catch(err => console.error("❌ Error creating Address table:", err));
+
+    Address.hasOne(Vendor, { foreignKey: 'address_id' });
 
 module.exports = Address;
