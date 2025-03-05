@@ -206,7 +206,7 @@ exports.updateStoreStatus = async (req, res) => {
         const channel = getChannel();
         if (channel) {
             const notification = {
-                user_id: user_id,
+                user_id: vendor.user_id,
                 title: `Update: ${vendor.store_name}`,
                 message: `Your Store '${vendor.store_name}' has been '${vendor.status}'.`,
             };
@@ -230,3 +230,42 @@ exports.updateStoreStatus = async (req, res) => {
     }
 }; 
 
+// vendor Statistics board
+exports.getVendorStats = async (req, res) => {
+    try {
+        const user_id = req.user.user_id; 
+
+        // Fetch vendor statistics in one go
+        const statsQuery = `
+            SELECT 
+                (SELECT COUNT(p.product_id) FROM product p JOIN vendors v ON p.vendor_id = v.vendor_id AND v.user_id = :user_id) AS totalProducts,
+                (SELECT COUNT(p.product_id) FROM product p JOIN vendors v ON p.vendor_id = v.vendor_id AND v.user_id = :user_id AND p.status = 'approved') AS approvedProducts,
+                (SELECT COUNT(p.product_id) FROM product p JOIN vendors v ON p.vendor_id = v.vendor_id AND v.user_id = :user_id AND p.status = 'pending') AS pendingProducts,
+                (SELECT COUNT(v.vendor_id) FROM vendors v WHERE v.user_id = :user_id) AS totalStores,
+                (SELECT COUNT(v.vendor_id) FROM vendors v WHERE v.user_id = :user_id AND v.status = 'approved') AS approvedStores,
+                (SELECT COUNT(v.vendor_id) FROM vendors v WHERE v.user_id = :user_id AND v.status = 'pending') AS pendingStores
+        `;
+
+        const statsResult = await sequelize.query(statsQuery, {
+            replacements: { user_id },
+            type: QueryTypes.SELECT,
+        });
+
+        const stats = statsResult[0];
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                totalProducts: stats.totalProducts,
+                approvedProducts: stats.approvedProducts,
+                pendingProducts: stats.pendingProducts,
+                totalStores: stats.totalStores,
+                approvedStores: stats.approvedStores,
+                pendingStores: stats.pendingStores,
+            },
+        });
+    } catch (error) {
+        console.error("Error fetching vendor stats:", error.message);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
