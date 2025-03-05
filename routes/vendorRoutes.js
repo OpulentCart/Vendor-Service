@@ -21,4 +21,7 @@ router.delete('/:id', authenticateUser, authorizeRole('admin' || 'vendor'), vend
 // get vendor statistics
 router.get('/dashboard/', authenticateUser, authorizeRole('vendor'), vendorController.getVendorStats);
 
+// get sales dashboard
+router.get('/sales/dashboard/', authenticateUser, authorizeRole('vendor'), vendorController.getSalesDashboard);
+
 module.exports = router;

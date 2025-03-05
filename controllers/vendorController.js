@@ -270,3 +270,106 @@ exports.getVendorStats = async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 };
+
+exports.getSalesDashboard = async (req, res) => {
+    try {
+        const userId = req.user.user_id; 
+
+        // Query 1: Monthly Profit
+        const monthlyProfit = await sequelize.query(
+            `SELECT 
+                TO_CHAR(o.order_date, 'Month') AS month,
+                EXTRACT(MONTH FROM o.order_date) AS month_num,
+                SUM(oi.subtotal) AS profit
+            FROM order_items oi
+            JOIN "order" o ON oi.order_id = o.order_id
+            JOIN product p ON oi.product_id = p.product_id
+            JOIN vendors v ON p.vendor_id = v.vendor_id
+            WHERE v.user_id = :userId
+            GROUP BY month, month_num
+            ORDER BY month_num;`,
+            { replacements: { userId }, type: sequelize.QueryTypes.SELECT }
+        );
+
+        // Query 2: Quantity by Category
+        const quantityByCategory = await sequelize.query(
+            `SELECT 
+                c.name,
+                SUM(oi.quantity) AS total_quantity
+            FROM order_items oi
+            JOIN product p ON oi.product_id = p.product_id
+            JOIN sub_category sc ON p.sub_category_id = sc.sub_category_id
+            JOIN category c ON sc.category_id = c.category_id
+            JOIN "order" o ON oi.order_id = o.order_id
+            JOIN vendors v ON p.vendor_id = v.vendor_id
+            WHERE v.user_id = :userId
+            GROUP BY c.name;`,
+            { replacements: { userId }, type: sequelize.QueryTypes.SELECT }
+        );
+
+        // Query 3: Top 5 Profitable Subcategories
+        const topProfitableSubCategories = await sequelize.query(
+            `SELECT 
+                sc.name,
+                SUM(oi.subtotal) AS sum_of_profit
+            FROM order_items oi
+            JOIN product p ON oi.product_id = p.product_id
+            JOIN sub_category sc ON p.sub_category_id = sc.sub_category_id
+            JOIN "order" o ON oi.order_id = o.order_id
+            JOIN vendors v ON p.vendor_id = v.vendor_id
+            WHERE v.user_id = :userId
+            GROUP BY sc.name
+            ORDER BY sum_of_profit DESC
+            LIMIT 5;`,
+            { replacements: { userId }, type: sequelize.QueryTypes.SELECT }
+        );
+
+        // Query 4: Top 4 Customers by Amount Spent
+        const topCustomers = await sequelize.query(
+            `SELECT 
+                c.name,
+                SUM(oi.subtotal) AS sum_of_amount
+            FROM order_items oi
+            JOIN "order" o ON oi.order_id = o.order_id
+            JOIN auth_app_customuser c ON o.user_id = c.id
+            JOIN product p ON oi.product_id = p.product_id
+            JOIN vendors v ON p.vendor_id = v.vendor_id
+            WHERE v.user_id = :userId
+            GROUP BY c.name
+            ORDER BY sum_of_amount DESC
+            LIMIT 4;`,
+            { replacements: { userId }, type: sequelize.QueryTypes.SELECT }
+        );
+
+        // Query 5: Vendor Sales Overview
+        const vendorSalesOverview = await sequelize.query(
+            `SELECT 
+                p.vendor_id, 
+                v.store_name,
+                SUM(oi.subtotal) AS total_sales,
+                SUM(oi.quantity) AS total_quantity,
+                COUNT(DISTINCT o.order_id) AS total_orders
+            FROM order_items oi
+            JOIN product p ON oi.product_id = p.product_id
+            JOIN "order" o ON oi.order_id = o.order_id
+            JOIN vendors v ON p.vendor_id = v.vendor_id
+            WHERE v.user_id = :userId
+            GROUP BY p.vendor_id, v.store_name;`,
+            { replacements: { userId }, type: sequelize.QueryTypes.SELECT }
+        );
+
+        // Constructing Response
+        return res.status(200).json({
+            success: "true",
+            monthlyProfit,
+            quantityByCategory,
+            topProfitableSubCategories,
+            topCustomers,
+            vendorSalesOverview
+        });
+
+    } catch (error) {
+        console.error('Error fetching sales dashboard:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
