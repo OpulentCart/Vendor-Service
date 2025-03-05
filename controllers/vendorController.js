@@ -6,7 +6,8 @@ const { generateVendorCertificate } = require('../utils/certificateUtils');
 const { sendEmail } = require('../services/mailService');
 const { getChannel } = require("../config/rabbitmqConfig");
 const Address = require('../models/address');
-
+const { sequelize } = require("../config/dbConfig");
+const { Sequelize, QueryTypes } = require("sequelize");
 // creating a new vendor
 exports.createVendor = async (req, res) => {
     try{
@@ -251,18 +252,18 @@ exports.getVendorStats = async (req, res) => {
             type: QueryTypes.SELECT,
         });
 
-        const stats = statsResult[0];
-
+        //const stats = statsResult[0];
+        console.log(statsResult);
+        const stats = statsResult[0]; 
         return res.status(200).json({
             success: true,
-            data: {
-                totalProducts: stats.totalProducts,
-                approvedProducts: stats.approvedProducts,
-                pendingProducts: stats.pendingProducts,
-                totalStores: stats.totalStores,
-                approvedStores: stats.approvedStores,
-                pendingStores: stats.pendingStores,
-            },
+                totalProducts: stats.totalproducts,
+                approvedProducts: stats.approvedproducts,
+                pendingProducts: stats.pendingproducts,
+                totalStores: stats.totalstores,
+                approvedStores: stats.approvedstores,
+                pendingStores: stats.pendingstores,
+            
         });
     } catch (error) {
         console.error("Error fetching vendor stats:", error.message);

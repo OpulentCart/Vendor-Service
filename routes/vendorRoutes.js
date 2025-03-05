@@ -18,4 +18,7 @@ router.put('/:id', authenticateUser, authorizeRole('admin'), vendorController.up
 // delete vendor by id
 router.delete('/:id', authenticateUser, authorizeRole('admin' || 'vendor'), vendorController.deleteVendor);
 
+// get vendor statistics
+router.get('/dashboard/', authenticateUser, authorizeRole('vendor'), vendorController.getVendorStats);
+
 module.exports = router;
